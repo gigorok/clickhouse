@@ -35,8 +35,12 @@ module Clickhouse
       pond.checkout do |connection|
         connection.send(*args, &block)
       end
-    rescue ::Clickhouse::ConnectionError
-      retry if pond.available.any?
+    rescue ::Clickhouse::ConnectionError => e
+      if pond.available.any?
+        retry
+      else
+        raise e
+      end
     end
 
   end
